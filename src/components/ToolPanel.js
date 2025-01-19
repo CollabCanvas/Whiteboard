@@ -8,7 +8,11 @@ import {
   Trash2,
   Download,
   Moon,
-  Sun
+  Sun,
+  Upload,
+  Type,
+  Bold,
+  Italic
 } from 'lucide-react';
 
 const ToolPanel = ({
@@ -25,7 +29,19 @@ const ToolPanel = ({
   undo,
   redo,
   clearCanvas,
-  downloadCanvas
+  downloadCanvas,
+  loadCanvas,
+  fontSize,
+  setFontSize,
+  isBold,
+  setIsBold,
+  isItalic,
+  setIsItalic,
+  isTextMode,
+  toggleTextMode,
+  addTextToCanvas,
+  isEditTextMode,
+  toggleEditTextMode
 }) => {
   return (
     <div className="tools-row">
@@ -50,6 +66,13 @@ const ToolPanel = ({
           title="Eraser"
         >
           <Eraser size={20} />
+        </button>
+        <button 
+          className={`tool-btn ${isTextMode ? 'active' : ''}`}
+          onClick={toggleTextMode}
+          title="Text"
+        >
+          <Type size={20} />
         </button>
       </div>
 
@@ -80,6 +103,33 @@ const ToolPanel = ({
           className="slider"
           title="Opacity"
         />
+        {isTextMode && (
+          <>
+            <input
+              type="number"
+              min="8"
+              max="72"
+              value={fontSize}
+              onChange={(e) => setFontSize(parseInt(e.target.value))}
+              className="font-size-input"
+              title="Font Size"
+            />
+            <button 
+              className={`tool-btn ${isBold ? 'active' : ''}`}
+              onClick={() => setIsBold(!isBold)}
+              title="Bold"
+            >
+              <Bold size={20} />
+            </button>
+            <button 
+              className={`tool-btn ${isItalic ? 'active' : ''}`}
+              onClick={() => setIsItalic(!isItalic)}
+              title="Italic"
+            >
+              <Italic size={20} />
+            </button>
+          </>
+        )}
       </div>
 
       <div className="tool-group">
@@ -94,6 +144,9 @@ const ToolPanel = ({
         </button>
         <button onClick={downloadCanvas} className="tool-btn" title="Download">
           <Download size={20} />
+        </button>
+        <button onClick={loadCanvas} className="tool-btn" title="Load">
+          <Upload size={20} />
         </button>
         <button onClick={toggleDarkMode} className="tool-btn" title="Toggle Theme">
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
