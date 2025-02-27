@@ -1,0 +1,23 @@
+.whiteboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.canvas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+canvas {
+  display: block;
+  border: 1px solid #e0e0e0;
+  background-color: white;
+  border-radius: 8px;
+}

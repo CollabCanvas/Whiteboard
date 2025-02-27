@@ -1,3 +1,5 @@
+import { templates, loadImageData } from '../templates/templates';
+
 class CanvasDrawingService {
     constructor(canvas) {
       this.canvas = canvas;
@@ -88,15 +90,16 @@ class CanvasDrawingService {
       return this.canvas.toDataURL();
     }
   
-    loadImageData(dataUrl) {
-      return new Promise((resolve) => {
+    loadTemplate(templateName) {
+      return new Promise((resolve, reject) => {
         const img = new Image();
-        img.src = dataUrl;
+        img.src = `/templates/${templateName}.png`; // Adjust the path as needed
         img.onload = () => {
-          this.clearRect(0, 0, this.canvas.width, this.canvas.height);
-          this.context.drawImage(img, 0, 0);
+          this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+          this.context.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
           resolve();
         };
+        img.onerror = reject;
       });
     }
   }
