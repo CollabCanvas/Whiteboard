@@ -1,115 +1,120 @@
 import React, { useState } from 'react';
-<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom';
 import { Button, Form, Modal, Container, Row, Col, Card } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/RoomSelection.css';
 
 const RoomSelection = () => {
-  const [roomId, setRoomId] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [generatedRoomId, setGeneratedRoomId] = useState('');
   const navigate = useNavigate();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [roomName, setRoomName] = useState('');
+  const [userName, setUserName] = useState('');
 
-  const handleCreateRoom = () => {
-    // Generate a 6 character random and unique code
-    const newRoomId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    setGeneratedRoomId(newRoomId);
-    setShowModal(true);
+  const handleCreateRoom = (e) => {
+    e.preventDefault();
+    if (roomName && userName) {
+      navigate(`/room/${roomName}`, { state: { userName, isHost: true } });
+    }
   };
 
-  const handleJoinRoom = () => {
-    // Navigate to the room URL
-    navigate(`/${roomId}`);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleJoinRoom = (e) => {
+    e.preventDefault();
+    if (roomName && userName) {
+      navigate(`/room/${roomName}`, { state: { userName, isHost: false } });
+    }
   };
 
   return (
-    <Container className="room-selection" style={{ marginTop: '50px', padding: '20px' }}>
-      <Row className="justify-content-md-center">
-        <Col md="4">
-          <Card>
+    <Container className="room-selection">
+      <h1 className="text-center mb-4">Welcome to Collab Canvas</h1>
+      <Row className="justify-content-center">
+        <Col md={6} className="text-center">
+          <Card className="mb-3">
             <Card.Body>
-              <Card.Title className="text-center">Collab Canvas</Card.Title>
-              <Card.Text className="text-center">
-                Create a new room or join an existing room to start collaborating.
-              </Card.Text>
+              <h2>Start Collaborating</h2>
               <div className="d-grid gap-2">
-                <Button variant="primary" onClick={handleCreateRoom} className="mb-3">
+                <Button variant="primary" size="lg" onClick={() => setShowCreateModal(true)}>
                   Create Room
                 </Button>
+                <Button variant="secondary" size="lg" onClick={() => setShowJoinModal(true)}>
+                  Join Room
+                </Button>
               </div>
-              <Form>
-                <Form.Group controlId="formRoomId">
-                  <Form.Label>Enter Room ID</Form.Label>
-                  <Form.Control 
-                    type="text" 
-                    value={roomId} 
-                    onChange={(e) => setRoomId(e.target.value)} 
-                    placeholder="Enter Room ID" 
-                  />
-                </Form.Group>
-                <div className="d-grid gap-2 mt-3">
-                  <Button variant="success" onClick={handleJoinRoom}>
-                    Join Room
-                  </Button>
-                </div>
-              </Form>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
-      <Modal show={showModal} onHide={handleCloseModal}>
+      {/* Create Room Modal */}
+      <Modal show={showCreateModal} onHide={() => setShowCreateModal(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Room Created</Modal.Title>
+          <Modal.Title>Create a Room</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Your room code is: <strong>{generatedRoomId}</strong></p>
+          <Form onSubmit={handleCreateRoom}>
+            <Form.Group className="mb-3">
+              <Form.Label>Room Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter room name"
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Your Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Create Room
+            </Button>
+          </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Close
-          </Button>
-        </Modal.Footer>
+      </Modal>
+
+      {/* Join Room Modal */}
+      <Modal show={showJoinModal} onHide={() => setShowJoinModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Join a Room</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleJoinRoom}>
+            <Form.Group className="mb-3">
+              <Form.Label>Room Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter room name"
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Your Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter your name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Join Room
+            </Button>
+          </Form>
+        </Modal.Body>
       </Modal>
     </Container>
   );
 };
 
 export default RoomSelection;
-=======
-
-const RoomSelection = () => {
-  const [roomId, setRoomId] = useState('');
-
-  const handleCreateRoom = () => {
-    // Placeholder for create room functionality
-    alert('Create Room button clicked');
-  };
-
-  const handleJoinRoom = () => {
-    // Placeholder for join room functionality
-    alert(`Join Room button clicked with Room ID: ${roomId}`);
-  };
-
-  return (
-    <div className="room-selection">
-      <button onClick={handleCreateRoom}>Create Room</button>
-      <div>
-        <input 
-          type="text" 
-          value={roomId} 
-          onChange={(e) => setRoomId(e.target.value)} 
-          placeholder="Enter Room ID" 
-        />
-        <button onClick={handleJoinRoom}>Join Room</button>
-      </div>
-    </div>
-  );
-};
-
-export default RoomSelection;
->>>>>>> 83f75251ab37ce7948f72d48a99197b92ad2f6da

@@ -191,6 +191,33 @@ const Whiteboard = ({ canvasWidth, canvasHeight }) => {
     }
   };
 
+  const handleMouseDown = (e) => {
+    e.preventDefault(); // Add this to prevent unwanted behaviors
+    if (tool === 'shape' && selectedShape) {
+      handleShapeMouseDown(e);
+    } else {
+      startDrawing(e);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    e.preventDefault(); // Add this to prevent unwanted behaviors
+    if (tool === 'shape' && selectedShape) {
+      handleShapeMouseMove(e);
+    } else {
+      draw(e);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    e.preventDefault(); // Add this to prevent unwanted behaviors
+    if (tool === 'shape' && selectedShape) {
+      handleShapeMouseUp(e);
+    } else {
+      stopDrawing(e);
+    }
+  };
+
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
   };
@@ -257,10 +284,8 @@ const Whiteboard = ({ canvasWidth, canvasHeight }) => {
         />
         <ShapeToolPanel
           selectedShape={selectedShape}
-          setSelectedShape={(shape) => {
-            setSelectedShape(shape);
-            setTool('shape');
-          }}
+          setSelectedShape={setSelectedShape}
+          setTool={handleToolChange} // Pass handleToolChange instead of setTool directly
         />
       </div>
       
@@ -276,10 +301,10 @@ const Whiteboard = ({ canvasWidth, canvasHeight }) => {
             backgroundColor: darkMode ? '#282c34' : 'white',
             borderRadius: '8px',
           }}
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
           onClick={handleCanvasClick}
         />
         {stickyNotes.map(note => (
