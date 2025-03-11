@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { drawShapeOnCanvas } from '../utils/drawShapes';
 import { HexColorPicker } from 'react-colorful'; // Add this import
 import '../styles/QuickTools.css';
+import { Type } from 'lucide-react';
 
 const QuickTools = ({ 
   tool, 
@@ -18,6 +19,7 @@ const QuickTools = ({
 }) => {
   const [showShapes, setShowShapes] = useState(false);
   const [showCustomPicker, setShowCustomPicker] = useState(false);
+  const [textInput, setTextInput] = useState(''); // State for text input
   const quickColors = ['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF'];
   const shapes = [
     { id: 'rectangle', icon: '⬛', label: 'Rectangle' },
@@ -55,6 +57,93 @@ const QuickTools = ({
     }
   };
 
+  const handleTextTool = () => {
+    if (tool !== 'text') return;
+  
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+  
+    const handleCanvasClick = (e) => {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+  
+      // ✅ Create textarea and append it directly to the canvas, not the parent
+      const input = document.createElement('textarea');
+      input.placeholder = 'Type here...';
+      input.style.resize = 'none';
+      input.style.width = 'auto';
+      input.style.height = 'auto';
+      input.style.position = 'fixed';  // ✅ Prevent canvas movement
+      input.style.left = `${e.clientX}px`;
+      input.style.top = `${e.clientY}px`;
+      input.style.border = 'none';
+      input.style.outline = 'none';
+      input.style.fontSize = '18px';
+      input.style.lineHeight = '1.5';
+      input.style.background = 'transparent';
+      input.style.color = color;
+      input.style.zIndex = '9999';
+  
+      document.body.appendChild(input);  // ✅ Append to body, not canvas.parentElement
+      input.focus();
+  
+      const ctx = canvas.getContext('2d');
+  
+      const handleEnter = (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          if (input.value.trim() !== '') {
+            ctx.font = '18px Arial';
+            ctx.fillStyle = color;
+            ctx.fillText(input.value, x, y);
+          }
+          removeInput();
+        }
+      };
+  
+      const handleBlur = () => {
+        if (input.value.trim() !== '') {
+          ctx.font = '18px Arial';
+          ctx.fillStyle = color;
+          ctx.fillText(input.value, x, y);
+        }
+        removeInput();
+      };
+  
+      const removeInput = () => {
+        input.removeEventListener('keydown', handleEnter);
+        input.removeEventListener('blur', handleBlur);
+        document.body.removeChild(input);
+        canvas.removeEventListener('click', handleCanvasClick);
+      };
+  
+      input.addEventListener('keydown', handleEnter);
+      input.addEventListener('blur', handleBlur);
+    };
+  
+    canvas.addEventListener('click', handleCanvasClick);
+  };
+  
+  
+  useEffect(() => {
+    const handleCanvasClick = (e) => {
+      if (tool === 'text') {
+        handleTextTool(e);
+      }
+    };
+
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.addEventListener('click', handleCanvasClick);
+    }
+
+    return () => {
+      if (canvas) {
+        canvas.removeEventListener('click', handleCanvasClick);
+      }
+    };
+  }, [tool]);
+
   return (
     <div className="quick-tools">
       <div className="quick-tools-section">
@@ -85,11 +174,11 @@ const QuickTools = ({
             🧽
           </button>
           <button 
-            className={`tool-button ${tool === 'sticky' ? 'active' : ''}`}
-            onClick={() => setTool('sticky')}
-            title="Sticky Note"
+            className={`tool-button ${tool === 'text' ? 'active' : ''}`}
+            onClick={() => setTool('text')}
+            title="Text Tool"
           >
-            📝
+            <Type size={20} />
           </button>
           <div className="shapes-dropdown">
             <button 
@@ -116,6 +205,14 @@ const QuickTools = ({
               </div>
             )}
           </div>
+        
+          <button 
+            className={`tool-button ${tool === 'sticky' ? 'active' : ''}`}
+            onClick={() => setTool('sticky')}
+            title="Sticky Note"
+          >
+            📝
+          </button>
         </div>
       </div>
 
